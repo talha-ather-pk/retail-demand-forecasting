@@ -1,0 +1,141 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "289b1c0559e2531dbcf2",
+  "position": {
+    "x": 912,
+    "y": 192,
+    "z": 4000,
+    "height": 262,
+    "width": 352,
+    "tabOrder": 4000
+  },
+  "visual": {
+    "visualType": "tableEx",
+    "drillFilterOtherVisuals": true,
+    "query": {
+      "queryState": {
+        "Values": {
+          "projections": [
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_store"
+                    }
+                  },
+                  "Property": "format"
+                }
+              },
+              "queryRef": "dim_store.format",
+              "nativeQueryRef": "format",
+              "displayName": "Format"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_store"
+                    }
+                  },
+                  "Property": "region"
+                }
+              },
+              "queryRef": "dim_store.region",
+              "nativeQueryRef": "region",
+              "displayName": "Region"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_store"
+                    }
+                  },
+                  "Property": "assortment"
+                }
+              },
+              "queryRef": "dim_store.assortment",
+              "nativeQueryRef": "assortment",
+              "displayName": "Assortment"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_store"
+                    }
+                  },
+                  "Property": "loyalty_programme"
+                }
+              },
+              "queryRef": "dim_store.loyalty_programme",
+              "nativeQueryRef": "loyalty_programme",
+              "displayName": "Loyalty"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "dim_store"
+                    }
+                  },
+                  "Property": "new_competitor"
+                }
+              },
+              "queryRef": "dim_store.new_competitor",
+              "nativeQueryRef": "new_competitor",
+              "displayName": "New competitor"
+            }
+          ]
+        }
+      }
+    },
+    "visualContainerObjects": {
+      "title": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Store profile'"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "subTitle": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Attributes that shape the forecast'"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

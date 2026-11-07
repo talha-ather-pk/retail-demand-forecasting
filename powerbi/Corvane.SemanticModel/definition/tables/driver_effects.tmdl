@@ -1,0 +1,68 @@
+table driver_effects
+	lineageTag: f66f0354-b92a-54e2-8d3d-8ecd47272d12
+
+	column group
+		dataType: string
+		lineageTag: 6e64037b-37c9-5115-a8c9-08a01a18971b
+		summarizeBy: none
+		sourceColumn: group
+
+		annotation SummarizationSetBy = User
+
+	column effect
+		dataType: string
+		lineageTag: e5f5711e-d6c1-5b08-9579-43cf734af2dd
+		summarizeBy: none
+		sourceColumn: effect
+
+		annotation SummarizationSetBy = User
+
+	column estimated
+		dataType: double
+		isHidden
+		lineageTag: 5ad4bca3-5b1a-5738-a8cc-85ff7221bb94
+		summarizeBy: none
+		sourceColumn: estimated
+
+		annotation SummarizationSetBy = User
+
+	column ci_low
+		dataType: double
+		isHidden
+		lineageTag: f9615344-f49d-57d5-9345-00b7117e5817
+		summarizeBy: none
+		sourceColumn: ci_low
+
+		annotation SummarizationSetBy = User
+
+	column ci_high
+		dataType: double
+		isHidden
+		lineageTag: 6f84878e-c4a9-5597-b2e3-e3c6ddeb6277
+		summarizeBy: none
+		sourceColumn: ci_high
+
+		annotation SummarizationSetBy = User
+
+	column true
+		dataType: double
+		isHidden
+		lineageTag: a4147dca-a12b-5259-9b9a-1fa75d8ad94d
+		summarizeBy: none
+		sourceColumn: true
+
+		annotation SummarizationSetBy = User
+
+	partition driver_effects = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "driver_effects.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"group", "effect", "estimated", "ci_low", "ci_high", "true"}),
+				    Blanks = Table.TransformColumns(Kept, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"group", type text}, {"effect", type text}, {"estimated", type number}, {"ci_low", type number}, {"ci_high", type number}, {"true", type number}}, "en-US")
+				in
+				    Typed
+
+	annotation PBI_ResultType = Table

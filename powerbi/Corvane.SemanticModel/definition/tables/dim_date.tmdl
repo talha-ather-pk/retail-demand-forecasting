@@ -1,0 +1,96 @@
+table dim_date
+	dataCategory: Time
+	lineageTag: a5dab929-c661-5ac6-af89-d8e55690d784
+
+	column date
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		lineageTag: 79c3e04c-d2ce-52eb-8f5f-9b83acc664e5
+		summarizeBy: none
+		sourceColumn: date
+
+		annotation SummarizationSetBy = User
+
+	column year
+		dataType: int64
+		formatString: 0
+		lineageTag: 09bf602c-682c-5da6-943e-e9be85fd6c7d
+		summarizeBy: none
+		sourceColumn: year
+
+		annotation SummarizationSetBy = User
+
+	column month_num
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 30b8135c-93c6-535f-8fb5-2a29458bbe66
+		summarizeBy: none
+		sourceColumn: month_num
+
+		annotation SummarizationSetBy = User
+
+	column month
+		dataType: string
+		sortByColumn: month_num
+		lineageTag: 3911006c-6632-59da-b256-7bc6348afcb6
+		summarizeBy: none
+		sourceColumn: month
+
+		annotation SummarizationSetBy = User
+
+	column month_start
+		dataType: dateTime
+		formatString: mmm yyyy
+		lineageTag: cfd0e9e0-3d83-5303-a930-b4f56eca195b
+		summarizeBy: none
+		sourceColumn: month_start
+
+		annotation SummarizationSetBy = User
+
+	column week_start
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		lineageTag: 78f12ee3-970c-5e2d-9790-d538b6d4ec13
+		summarizeBy: none
+		sourceColumn: week_start
+
+		annotation SummarizationSetBy = User
+
+	column weekday_num
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: b8f16944-d6b7-5821-abf5-6740458c2464
+		summarizeBy: none
+		sourceColumn: weekday_num
+
+		annotation SummarizationSetBy = User
+
+	column weekday
+		dataType: string
+		sortByColumn: weekday_num
+		lineageTag: 55592be3-3af0-5141-8efb-aa4722b4141e
+		summarizeBy: none
+		sourceColumn: weekday
+
+		annotation SummarizationSetBy = User
+
+	partition dim_date = m
+		mode: import
+		source =
+				let
+				    Dates = List.Dates(#date(2023, 1, 1), Duration.Days(#date(2026, 2, 11) - #date(2023, 1, 1)) + 1, #duration(1, 0, 0, 0)),
+				    Base = Table.FromList(Dates, Splitter.SplitByNothing(), type table [date = date]),
+				    Year = Table.AddColumn(Base, "year", each Date.Year([date]), Int64.Type),
+				    MonthNum = Table.AddColumn(Year, "month_num", each Date.Month([date]), Int64.Type),
+				    Month = Table.AddColumn(MonthNum, "month", each Date.ToText([date], "MMM", "en-US"), type text),
+				    MonthStart = Table.AddColumn(Month, "month_start", each Date.StartOfMonth([date]), type date),
+				    WeekStart = Table.AddColumn(MonthStart, "week_start", each Date.StartOfWeek([date], Day.Monday), type date),
+				    WeekdayNum = Table.AddColumn(WeekStart, "weekday_num", each Date.DayOfWeek([date], Day.Monday) + 1, Int64.Type),
+				    Weekday = Table.AddColumn(WeekdayNum, "weekday", each Date.ToText([date], "ddd", "en-US"), type text)
+				in
+				    Weekday
+
+	annotation PBI_ResultType = Table

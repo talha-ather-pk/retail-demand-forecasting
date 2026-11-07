@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "Corvane"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "3f815353-4fe7-5739-b8e0-c58b9b81a512"
+  }
+}

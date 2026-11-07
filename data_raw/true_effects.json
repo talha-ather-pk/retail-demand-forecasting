@@ -1,0 +1,37 @@
+{
+  "promo_lift_by_format": {
+    "Neighborhood": 0.18,
+    "Flagship": 0.12,
+    "Express": 0.25
+  },
+  "extended_assortment_extra_lift": 0.03,
+  "loyalty_programme_lift": 0.04,
+  "payday_lift": 0.06,
+  "pre_holiday_rush": {
+    "day_before": 0.18,
+    "two_days_before": 0.08
+  },
+  "open_holiday_factor": 0.82,
+  "competitor_hit_range": "6% (1.5 km away) to 16% (next door), phased in over 60 days",
+  "competitor_hit_by_store": {
+    "41": 0.104,
+    "21": 0.142,
+    "15": 0.105,
+    "59": 0.13,
+    "4": 0.121,
+    "13": 0.077,
+    "20": 0.128,
+    "40": 0.092,
+    "32": 0.109,
+    "27": 0.109,
+    "54": 0.075,
+    "30": 0.13
+  },
+  "school_holiday": {
+    "Neighborhood": 0.05,
+    "Flagship": 0.03,
+    "Express": -0.06
+  },
+  "refurb_reopening_bump": 0.06,
+  "noise_sd_log": 0.07
+}

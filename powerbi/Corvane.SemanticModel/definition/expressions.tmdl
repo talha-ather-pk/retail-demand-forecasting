@@ -1,0 +1,4 @@
+expression DataFolder = "C:\Users\DELL\upwork-profile\data-portfolio\data-portfolio\03-retail-demand-forecasting\data_clean\" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	lineageTag: 766101b7-b56e-591e-b091-445672d4e054
+
+	annotation PBI_ResultType = Text

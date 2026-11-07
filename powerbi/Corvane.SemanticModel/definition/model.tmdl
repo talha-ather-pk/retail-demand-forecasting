@@ -1,0 +1,21 @@
+model Model
+	culture: en-US
+	defaultPowerBIDataSourceVersion: powerBI_V3
+	discourageImplicitMeasures
+	sourceQueryCulture: en-US
+	dataAccessOptions
+		legacyRedirects
+		returnErrorValuesAsNull
+
+annotation PBI_QueryOrder = ["DataFolder", "_Measures", "fact_sales", "fact_forecast", "fact_backtest", "dim_store", "dim_date", "driver_effects", "competitor_effects"]
+
+annotation __PBI_TimeIntelligenceEnabled = 0
+
+ref table _Measures
+ref table fact_sales
+ref table fact_forecast
+ref table fact_backtest
+ref table dim_store
+ref table dim_date
+ref table driver_effects
+ref table competitor_effects

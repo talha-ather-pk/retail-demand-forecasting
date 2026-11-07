@@ -1,0 +1,61 @@
+store_id,store_name,format,region,assortment,sq_ft,competition_distance_m,opened_year,promo2,promo2_since,competitor_opened,new_competitor_distance_m
+1,Des Moines #01,Flagship,Midwest,Basic,15400,290.0,2017,0,,,
+2,Columbus #02,EXPRESS,Midwest,Extended,4500,2790.0,2002,0,,,
+3,Des Moines #03,Express,Midwest,Extended,4500,540.0,1998,1,2024-07-01,,
+4,Albany #04,Neighborhood,Northeast,Extended,10100,1320.0,2008,0,,2024-08-03,590.0
+5,Raleigh #05,Neighborhood,Southeast,Extended,9300,2850.0,2002,1,2024-07-01,,
+6,Albany #06,Express,Northeast,Extended,4000,310.0,2018,0,,,
+7,Nashville #07,Neighborhood,Southeast,Basic,9300,200.0,2017,0,,,
+8,Providence #08,Express,Northeast,Basic,3600,1690.0,2006,0,,,
+9,Denver #09,Express,West,Basic,4600,1390.0,2005,1,2024-07-01,,
+10,Albany #10,Neighborhood,Northeast,Basic,9600,1070.0,2014,1,2024-07-01,,
+11,Indianapolis #11,Neighborhood,Midwest,Basic,9200,1390.0,2008,0,,,
+12,Charlotte #12,Neighborhood,Southeast,Extended,9600,620.0,2000,0,,,
+13,Phoenix #13,Neighborhood,West,Extended,10100,340.0,2013,0,,2025-06-20,1240.0
+14,Columbus #14,Neighborhood,Midwest,Basic,9200,1150.0,2014,1,2024-07-01,,
+15,Worcester #15,Neighborhood,Northeast,Extended,10400,560.0,1999,0,,2024-06-04,820.0
+16,Sacramento #16,Neighborhood,West,Basic,10700,310.0,2015,1,2024-07-01,,
+17,Denver #17,Express,West,Extended,4100,2110.0,2010,0,,,
+18,Phoenix #18,Express,West,Extended,3700,1270.0,2016,1,2024-07-01,,
+19,Indianapolis #19,Flagship,Midwest,Basic,18300,1930.0,2017,0,,,
+20,Hartford #20,Express,Northeast,Extended,4800,550.0,2013,0,,2025-08-11,480.0
+21,Hartford #21,Neighborhood,Northeast,Basic,8500,740.0,2005,0,,2024-09-14,270.0
+22,Salt Lake City #22,Neighborhood,West,Extended,10100,550.0,2006,0,,,
+23,Des Moines #23,Neighborhood,Midwest,Extended,10400,600.0,2014,0,,,
+24,Providence #24,Neighborhood,Northeast,Basic,10700,1600.0,1999,0,,,
+25,Salt Lake City #25,NEIGHBORHOOD,West,Basic,8400,660.0,2003,1,2024-07-01,,
+26,Indianapolis #26,Neighborhood,Midwest,Basic,8300,1850.0,2009,0,,,
+27,Columbus #27,Neighborhood,Midwest,Extended,10900,1820.0,2019,1,2024-07-01,2024-03-08,770.0
+28,Charlotte #28,Express,Southeast,Extended,3700,8290.0,2015,1,2024-07-01,,
+29,Atlanta #29,Flagship,Southeast,Extended,15400,380.0,2016,0,,,
+30,Worcester #30,NEIGHBORHOOD,Northeast,Basic,9700,2980.0,2002,0,,2024-10-07,450.0
+31,Hartford #31,Neighborhood,Northeast,Extended,9300,1240.0,2004,1,2024-07-01,,
+32,Sacramento #32,Neighborhood,West,Extended,10200,1320.0,2004,0,,2024-03-15,760.0
+33,Charlotte #33,Neighborhood,Southeast,Extended,8600,360.0,2015,0,,,
+34,Des Moines #34,Neighborhood,Midwest,Basic,10700,890.0,2010,0,,,
+35,Atlanta #35,Flagship,Southeast,Extended,15600,2610.0,2002,1,2024-07-01,,
+36,Milwaukee #36,Neighborhood,Midwest,Basic,10300,1240.0,2015,0,,,
+37,Worcester #37,Neighborhood,Northeast,Basic,8300,1440.0,2012,1,2024-07-01,,
+38,Tampa #38,Neighborhood,Southeast,Basic,9400,1030.0,2018,0,,,
+39,Worcester #39,Express,Northeast,Basic,3600,3790.0,2010,1,2024-07-01,,
+40,Worcester #40,Neighborhood,Northeast,Basic,9000,1310.0,2000,0,,2024-06-29,1020.0
+41,Boise #41,Neighborhood,West,Basic,9000,180.0,2018,1,2024-07-01,2024-05-15,840.0
+42,Madison #42,Express,Midwest,Extended,4500,720.0,2002,0,,,
+43,Tampa #43,Neighborhood,Southeast,Basic,9400,230.0,1999,0,,,
+44,Tampa #44,Express,Southeast,Extended,3600,,2016,0,,,
+45,Boise #45,Flagship,West,Basic,19500,830.0,2008,1,2024-07-01,,
+46,Raleigh #46,Express,Southeast,Extended,4700,4450.0,2012,0,,,
+47,Des Moines #47,Neighborhood,Midwest,Basic,10700,1400.0,2000,1,2024-07-01,,
+48,Des Moines #48,Neighborhood,Midwest,Basic,8800,470.0,2014,1,2024-07-01,,
+49,Raleigh #49,Neighborhood,Southeast,Extended,9200,570.0,2007,1,2024-07-01,,
+50,Raleigh #50,Express,Southeast,Basic,3900,3710.0,2020,1,2024-07-01,,
+51,Boise #51,Neighborhood,West,Extended,8400,1540.0,2012,0,,,
+52,Salt Lake City #52,NEIGHBORHOOD,West,Extended,8200,,2019,0,,,
+53,Boston #53,Neighborhood,Northeast,Extended,9500,1280.0,2016,0,,,
+54,Denver #54,NEIGHBORHOOD,West,Basic,8400,1390.0,2017,1,2024-07-01,2024-06-10,1270.0
+55,Hartford #55,Neighborhood,Northeast,Extended,8600,2770.0,2000,1,2024-07-01,,
+56,Milwaukee #56,Neighborhood,Midwest,Basic,10500,2200.0,2015,1,2024-07-01,,
+57,Denver #57,Express,West,Extended,4200,1630.0,2011,0,,,
+58,Providence #58,Neighborhood,Northeast,Extended,8600,520.0,2007,0,,,
+59,Tampa #59,Express,Southeast,Extended,4400,,2005,0,,2025-08-01,450.0
+60,Salt Lake City #60,Neighborhood,West,Basic,8800,720.0,2012,0,,,

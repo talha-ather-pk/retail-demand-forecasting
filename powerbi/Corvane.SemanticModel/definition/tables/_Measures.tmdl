@@ -1,0 +1,388 @@
+table _Measures
+	lineageTag: 31a6320f-1a2a-5b2c-9536-eaf39bcfe5bb
+
+	measure 'Actual Sales' = SUM ( fact_sales[sales] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 History
+		lineageTag: b00669da-b3e5-5f5b-b94b-c13b322410aa
+
+	measure 'Open Store Days' = CALCULATE ( COUNTROWS ( fact_sales ), fact_sales[usable] = 1 )
+		formatString: #,0
+		displayFolder: 1 History
+		lineageTag: 888523d3-b80d-5ca1-bccd-964df952b623
+
+	measure 'Avg Sales per Open Day' = DIVIDE ( CALCULATE ( [Actual Sales], fact_sales[usable] = 1 ), [Open Store Days] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 History
+		lineageTag: 74f6d30a-66b7-5a61-af8e-23e05143aee6
+
+	measure Customers = SUM ( fact_sales[customers] )
+		formatString: #,0
+		displayFolder: 1 History
+		lineageTag: 4edb8edd-28ab-5d4d-884b-c72f2652ff40
+
+	measure 'Avg Basket' = DIVIDE ( [Actual Sales], [Customers] )
+		formatString: \$#,0.00;(\$#,0.00);\$#,0.00
+		displayFolder: 1 History
+		lineageTag: 51b2821f-652e-512c-a94f-a786c66adbae
+
+	measure 'Actual Sales (Recent)' = IF ( MAX ( dim_date[date] ) >= DATE ( 2025, 10, 1 ), [Actual Sales] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 History
+		lineageTag: 3a53e0c5-dc98-5823-9ee2-422c377f4e27
+
+	measure 'Actual Sales 2025' = CALCULATE ( [Actual Sales], dim_date[year] = 2025 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 History
+		lineageTag: b22daf6d-1419-55cc-8876-bcda22f9ca24
+
+	measure 'Actual Sales 2024' = CALCULATE ( [Actual Sales], dim_date[year] = 2024 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 1 History
+		lineageTag: 4ee838ef-c384-533e-b809-15d52fe7f3ab
+
+	measure 'Sales Growth 2025' = DIVIDE ( [Actual Sales 2025] - [Actual Sales 2024], [Actual Sales 2024] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 1 History
+		lineageTag: 2c548b26-f671-5b1a-9cc4-2805aec39a35
+
+	measure Forecast = SUM ( fact_forecast[forecast] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: 09d03364-f6d4-5d91-b7fa-ed61d179a90a
+
+	measure 'Forecast P10' = SUM ( fact_forecast[p10] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: b8724a73-a90d-5fcd-a738-b4beab6075d6
+
+	measure 'Forecast P90' = SUM ( fact_forecast[p90] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: 797fa9a1-9b67-56e2-be31-692fa5ed4c23
+
+	measure 'Forecast Prophet' = SUM ( fact_forecast[forecast_prophet] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: 1937ecca-70e4-524c-b63e-97946fb8c3ef
+
+	measure 'Forecast Gradient Boosting' = SUM ( fact_forecast[forecast_gbm] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: dcdb1c5f-c6f6-5ab6-9f4d-dc92c0f2b807
+
+	measure 'Sales Same Dates LY' = CALCULATE ( [Actual Sales], REMOVEFILTERS ( dim_date ), TREATAS ( SELECTCOLUMNS ( VALUES ( fact_forecast[date] ), "d", fact_forecast[date] - 365 ), dim_date[date] ) )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 2 Forecast
+		lineageTag: 1c76ce8b-879a-554d-aa08-0aab9c1ce54f
+
+	measure 'Forecast vs LY %' = DIVIDE ( [Forecast] - [Sales Same Dates LY], [Sales Same Dates LY] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 2 Forecast
+		lineageTag: efbad48d-a851-5c45-8771-16583d2d922d
+
+	measure 'Forecast Range Label' = FORMAT ( [Forecast P10] / 1000000, "$0.00" ) & "M  –  " & FORMAT ( [Forecast P90] / 1000000, "$0.00" ) & "M"
+		displayFolder: 2 Forecast
+		lineageTag: f7589874-3723-5756-9db7-7bb824d6a05a
+
+	measure 'Forecast vs LY Label' = IF ( ISBLANK ( [Sales Same Dates LY] ), "", FORMAT ( [Forecast vs LY %], "▲ 0.0%;▼ 0.0%;● 0.0%" ) & "  vs same dates 2025" )
+		displayFolder: 2 Forecast
+		lineageTag: 8bee0fde-b87e-5703-a444-977f88d53a54
+
+	measure 'Forecast Days' = COUNTROWS ( VALUES ( fact_forecast[date] ) )
+		formatString: #,0
+		isHidden
+		displayFolder: 2 Forecast
+		lineageTag: ad6751a0-c8d1-5f9c-af6b-e2483b031aa7
+
+	measure 'Selected Model' = SELECTEDVALUE ( fact_forecast[model], "ensemble" )
+		isHidden
+		displayFolder: 2 Forecast
+		lineageTag: 6e7b03b3-852c-58a9-90a9-ae073c6b082c
+
+	measure 'Selected Model Label' = SWITCH ( [Selected Model], "gbm", "Gradient boosting", "prophet", "Prophet", "ensemble", "Ensemble (Prophet + GBM)", "Baseline" )
+		displayFolder: 2 Forecast
+		lineageTag: 298ea242-49e6-5734-8b26-5c6d70c86db7
+
+	measure 'Backtest Actual' = CALCULATE ( SUM ( fact_backtest[sales] ), fact_backtest[usable] = 1, REMOVEFILTERS ( fact_backtest[model], fact_backtest[model_label], fact_backtest[model_order] ), fact_backtest[model] = "naive" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: 9d47e368-5d6f-53d2-91fb-dd2620c95015
+
+	measure 'Backtest Forecast' = CALCULATE ( SUM ( fact_backtest[prediction] ), fact_backtest[usable] = 1 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: 9d677953-71d5-5c01-bdd2-4c93b9efbd4e
+
+	measure 'Abs Error' = SUMX ( FILTER ( fact_backtest, fact_backtest[usable] = 1 ), ABS ( fact_backtest[prediction] - fact_backtest[sales] ) )
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		displayFolder: 3 Accuracy
+		lineageTag: 04df6032-1977-5d4a-af27-45c01564c871
+
+	measure 'Signed Error' = SUMX ( FILTER ( fact_backtest, fact_backtest[usable] = 1 ), fact_backtest[prediction] - fact_backtest[sales] )
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		displayFolder: 3 Accuracy
+		lineageTag: 5081259d-160a-5683-9771-43d08700193e
+
+	measure 'Backtest Sales (per model)' = CALCULATE ( SUM ( fact_backtest[sales] ), fact_backtest[usable] = 1 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		isHidden
+		displayFolder: 3 Accuracy
+		lineageTag: 1f9dfa6c-529e-533a-afe2-b98e7bc285cd
+
+	measure WAPE = DIVIDE ( [Abs Error], [Backtest Sales (per model)] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: a5d2b286-a140-5ad8-bd01-57234a02b9e3
+
+	measure 'Bias %' = DIVIDE ( [Signed Error], [Backtest Sales (per model)] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: dc845da0-41b8-5aec-a5f3-f2e5a1de3b2a
+
+	measure MAPE = AVERAGEX ( FILTER ( fact_backtest, fact_backtest[usable] = 1 ), DIVIDE ( ABS ( fact_backtest[prediction] - fact_backtest[sales] ), fact_backtest[sales] ) )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 435db66b-53df-5f76-a8eb-4f9246a6e57b
+
+	measure 'WAPE Selected Model' = VAR mdl = [Selected Model] RETURN CALCULATE ( [WAPE], fact_backtest[model] = mdl )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 2fab1872-84c8-5fe9-ab56-119a0c25dc10
+
+	measure 'WAPE Baseline' = CALCULATE ( [WAPE], fact_backtest[model] = "naive" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 0d44c10b-da67-5171-aa6c-2a6bd13913f4
+
+	measure 'Error Reduction vs Baseline' = 1 - DIVIDE ( [WAPE Selected Model], [WAPE Baseline] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: f3e566d4-da21-595c-ba96-4f02ab42f2f1
+
+	measure 'Bias Selected Model' = VAR mdl = [Selected Model] RETURN CALCULATE ( [Bias %], fact_backtest[model] = mdl )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: f325b21b-d847-530d-8b67-ad172cd21995
+
+	measure 'MAPE Selected Model' = VAR mdl = [Selected Model] RETURN CALCULATE ( [MAPE], fact_backtest[model] = mdl )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 64c27d52-6538-5934-9b02-defb41486688
+
+	measure 'Forecast Selected Model (Backtest)' = VAR mdl = [Selected Model] RETURN CALCULATE ( [Backtest Forecast], fact_backtest[model] = mdl )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: ea35f315-b1a0-545a-8df7-aca921190801
+
+	measure 'Forecast Baseline (Backtest)' = CALCULATE ( [Backtest Forecast], fact_backtest[model] = "naive" )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: ca6238b4-e2f5-566e-901e-dac1306644b4
+
+	measure 'Error Reduction Label' = FORMAT ( [Error Reduction vs Baseline], "0%" ) & " lower error than baseline"
+		displayFolder: 3 Accuracy
+		lineageTag: ab47b76e-999c-58a7-8578-2fb6c3ef8ecc
+
+	measure 'Baseline Label' = "Same weekday last year"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: a866b8d1-05c1-531d-a178-c86ed7d7f3f8
+
+	measure 'Bias Label' = IF ( [Bias Selected Model] >= 0, "Slight over-forecast", "Slight under-forecast" )
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 023f963d-8793-52a0-825d-186ebb24ef81
+
+	measure 'MAPE Label' = "Average daily % error"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: a945c39f-1ca1-519b-a545-9edf404be946
+
+	measure 'Estimated Effect' = SUM ( driver_effects[estimated] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: 136f2390-3cc8-5696-ade9-5b8f57122bea
+
+	measure 'True Effect (Simulated)' = SUM ( driver_effects[true] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: f4397ea6-4a59-5e3a-95c2-53f1cd933214
+
+	measure 'Effect CI Low' = SUM ( driver_effects[ci_low] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: c1b30d7f-fb41-522c-a8ea-f1b9fc5880ca
+
+	measure 'Effect CI High' = SUM ( driver_effects[ci_high] )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: ecf448f0-2d75-5349-9535-1b8d70fb4057
+
+	measure 'Promo Lift Neighborhood' = CALCULATE ( [Estimated Effect], driver_effects[effect] = "Promotion lift, Neighborhood (basic assortment)" )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: 8a015bca-f325-54c6-936a-c07aedb4696b
+
+	measure 'Promo Lift Flagship' = CALCULATE ( [Estimated Effect], driver_effects[effect] = "Promotion lift, Flagship (basic assortment)" )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: d8011fb1-73a6-55f5-819d-00ab1ce2531c
+
+	measure 'Promo Lift Express' = CALCULATE ( [Estimated Effect], driver_effects[effect] = "Promotion lift, Express (basic assortment)" )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: 31471717-c889-545a-ab7e-bab4f966312e
+
+	measure 'Payday Lift' = CALCULATE ( [Estimated Effect], driver_effects[effect] = "Payday (1st-3rd, 15th-16th)" )
+		formatString: +0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: bd06d2b6-f526-5b95-8e6a-4a9e81a9d896
+
+	measure 'Competitor Distance' = AVERAGE ( competitor_effects[new_competitor_distance_m] )
+		formatString: #,0
+		displayFolder: 4 Drivers
+		lineageTag: 9734ba45-7c66-5c1f-8908-20c8c12162ed
+
+	measure 'Competitor Hit' = AVERAGE ( competitor_effects[estimated_hit] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: 17a8e329-1212-5ce4-b320-e53b24507e82
+
+	measure 'Competitor Hit (True)' = AVERAGE ( competitor_effects[true_hit] )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 4 Drivers
+		lineageTag: bcaff684-d48f-55bc-a6ad-3715957e183c
+
+	measure 'Note True' = FORMAT ( [True Effect (Simulated)], "+0%;-0%" ) & " built into the simulation"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 5c35117f-3b12-55e3-99d5-89094a2c51b4
+
+	measure 'Note Promo Neighborhood' = FORMAT ( CALCULATE ( [True Effect (Simulated)], driver_effects[effect] = "Promotion lift, Neighborhood (basic assortment)" ), "+0%" ) & " simulated"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: c4036aec-6887-5fbf-8a51-a8f7aef7f74f
+
+	measure 'Note Promo Flagship' = FORMAT ( CALCULATE ( [True Effect (Simulated)], driver_effects[effect] = "Promotion lift, Flagship (basic assortment)" ), "+0%" ) & " simulated"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 2ce8cd1b-2947-5d67-abca-478186a2c374
+
+	measure 'Note Promo Express' = FORMAT ( CALCULATE ( [True Effect (Simulated)], driver_effects[effect] = "Promotion lift, Express (basic assortment)" ), "+0%" ) & " simulated"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: e582023c-860a-5d83-a919-fab0cd774e0d
+
+	measure 'Note Payday' = FORMAT ( CALCULATE ( [True Effect (Simulated)], driver_effects[effect] = "Payday (1st-3rd, 15th-16th)" ), "+0%" ) & " simulated"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: adc84ab8-8dcd-578c-801c-c80b45693ff8
+
+	measure 'Note Competitor' = FORMAT ( [Competitor Hit (True)], "0%" ) & " simulated, 12 stores"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 905dc0d9-9e44-5b12-91e0-511f8c935cf1
+
+	measure 'Store WAPE' = [WAPE Selected Model]
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 5 Stores
+		lineageTag: 9483ddb3-d92c-5de6-9c5f-a8dca968cf49
+
+	measure Stores = DISTINCTCOUNT ( dim_store[store_id] )
+		formatString: #,0
+		displayFolder: 5 Stores
+		lineageTag: 28ed8bf3-57e2-500d-a897-f6b26059ff35
+
+	measure 'Store Forecast Rank' = IF ( ISINSCOPE ( dim_store[store_name] ), RANKX ( ALLSELECTED ( dim_store[store_name] ), [Forecast], , DESC, DENSE ) )
+		formatString: #,0
+		displayFolder: 5 Stores
+		lineageTag: d049f8b7-f481-52a9-ba0b-eea4d605f595
+
+	measure 'Filter Context' = IF ( ISFILTERED ( dim_store[region] ), CONCATENATEX ( VALUES ( dim_store[region] ), dim_store[region], ", ", dim_store[region], ASC ), "All regions" ) & "   ·   " & IF ( ISFILTERED ( dim_store[format] ), CONCATENATEX ( VALUES ( dim_store[format] ), dim_store[format], ", ", dim_store[format], ASC ), "All formats" ) & "   ·   " & IF ( ISFILTERED ( dim_store[store_name] ), CONCATENATEX ( VALUES ( dim_store[store_name] ), dim_store[store_name], ", ", dim_store[store_name], ASC ), "All 60 stores" ) & "   ·   forecast 1 Jan – 11 Feb 2026"
+		displayFolder: 7 Dynamic text
+		lineageTag: 3bbb3cf7-b526-5abe-990f-a7c773073278
+
+	measure 'Blank Text' = ""
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 0109dead-4409-51ff-8600-979f6a0051ee
+
+	measure 'Note P10' = "8 in 10 outcomes above this"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: d4fc8dbc-2b3a-5d0d-a652-05e5c6bf8b9d
+
+	measure 'Note P90' = "8 in 10 outcomes below this"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 32c87df9-f094-5b4b-9d50-dbba99a5f2e2
+
+	measure 'Note LY' = "Actual, 1 Jan – 11 Feb 2025"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: 901c0c1b-2f16-5c9e-a22c-7a2dc3872423
+
+	measure 'Note History' = "Open days, 2023 – 2025"
+		isHidden
+		displayFolder: 9 Helpers
+		lineageTag: df123b48-ace5-5f6b-9b89-f69592a28864
+
+	measure 'Title Tooltip' = FORMAT ( MAX ( dim_date[date] ), "dddd d mmm yyyy" )
+		displayFolder: 7 Dynamic text
+		lineageTag: b04f7e72-3b69-568f-ae18-5d72fe5b64cb
+
+	measure 'Title Forecast Trend' = "Daily sales: actual Oct–Dec 2025 and forecast to 11 Feb 2026  ·  " & [Selected Model Label]
+		displayFolder: 7 Dynamic text
+		lineageTag: 62713267-cb3c-501f-b392-2310d7086b6d
+
+	measure 'Title Store' = SELECTEDVALUE ( dim_store[store_name], "Multiple stores" ) & "  ·  " & SELECTEDVALUE ( dim_store[format], "" ) & " store detail"
+		displayFolder: 7 Dynamic text
+		lineageTag: 00d247f5-6a8c-58a8-857e-b2a1eed53ce7
+
+	measure 'Title Accuracy Trend' = "Backtests: actual vs " & [Selected Model Label] & " vs baseline (three 6-week windows)"
+		displayFolder: 7 Dynamic text
+		lineageTag: d442a22c-6db5-5b30-848e-c44eb04e6049
+
+	measure 'vs LY Color' = IF ( [Forecast vs LY %] >= 0, "#0E7C86", "#B5523B" )
+		isHidden
+		displayFolder: 8 Formatting
+		lineageTag: 67ab488c-0eff-5f4e-89cf-0c025a9a8d63
+
+	measure 'WAPE Heat' = VAR w = [WAPE] RETURN SWITCH ( TRUE (), ISBLANK ( w ), BLANK (), w < 0.05, "#D3ECEE", w < 0.07, "#EEF6F6", w < 0.09, "#F7E6CC", "#F3D7CF" )
+		isHidden
+		displayFolder: 8 Formatting
+		lineageTag: c7aa0d9d-b260-5617-85db-36eb7cce9661
+
+	measure 'Model Color' = IF ( SELECTEDVALUE ( fact_backtest[model] ) = [Selected Model], "#1F4E79", IF ( SELECTEDVALUE ( fact_backtest[model] ) = "naive", "#B8C2CF", "#7FA3C7" ) )
+		isHidden
+		displayFolder: 8 Formatting
+		lineageTag: 6501ffd3-d780-585f-9ac4-083c0e6cf343
+
+	measure 'Effect Color' = IF ( [Estimated Effect] >= 0, "#0E7C86", "#B5523B" )
+		isHidden
+		displayFolder: 8 Formatting
+		lineageTag: 44914d7e-914a-5063-bc65-8aa03fef5335
+
+	measure 'Neutral Color' = "#64748B"
+		isHidden
+		displayFolder: 8 Formatting
+		lineageTag: c5c10275-184e-58fa-b79f-b750cddb4b63
+
+	column Value
+		dataType: string
+		isHidden
+		lineageTag: 22ddf2a6-30dd-5bfc-ba15-0b009ddcaaf6
+		summarizeBy: none
+		sourceColumn: Value
+
+		annotation SummarizationSetBy = Automatic
+
+	partition _Measures = m
+		mode: import
+		source =
+				#table(type table [Value = text], {})
+
+	annotation PBI_ResultType = Table

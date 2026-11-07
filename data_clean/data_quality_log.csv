@@ -1,0 +1,14 @@
+table,check,rows_affected,action
+stores,rows loaded,60,none
+sales,rows loaded,65892,none
+stores,format in wrong case,5,title-cased
+stores,missing competition distance,3,"filled with the median of the same region, flagged"
+sales,dates in MM/DD/YYYY format,642,parsed and standardised
+sales,unparseable dates,0,checked
+sales,duplicated export rows,132,dropped
+sales,duplicate store-date keys,0,checked
+sales,negative sales (sign typo),14,sign corrected
+sales,open days with zero sales (POS outage),86,"kept, flagged is_outage; excluded from training and accuracy"
+sales,closed days,3119,kept; forecast is 0 when closed
+sales,missing store-days,0,checked
+sales,refurbishment closure days (7+ consecutive closed days),73,flagged refurb_closed

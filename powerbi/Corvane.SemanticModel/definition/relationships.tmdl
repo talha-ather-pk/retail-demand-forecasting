@@ -1,0 +1,30 @@
+relationship cd361321-21fd-5d8d-b7da-8ee7a7dcd3c0
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_sales.date
+	toColumn: dim_date.date
+
+relationship 34299a89-a20e-536b-88f8-ae8a6798ebe1
+	fromColumn: fact_sales.store_id
+	toColumn: dim_store.store_id
+
+relationship 6b65de26-453c-5f5e-bf21-20c3280b8884
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_forecast.date
+	toColumn: dim_date.date
+
+relationship 4d5aceda-6933-5d0b-8b01-3e67be1edc9a
+	fromColumn: fact_forecast.store_id
+	toColumn: dim_store.store_id
+
+relationship a1e81d08-f3fc-5b9b-87dd-7e78119adb27
+	joinOnDateBehavior: datePartOnly
+	fromColumn: fact_backtest.date
+	toColumn: dim_date.date
+
+relationship 68709b2c-8327-540f-8f5b-48cf9cb1e173
+	fromColumn: fact_backtest.store_id
+	toColumn: dim_store.store_id
+
+relationship 54d246f9-dbdf-5ee8-8647-4296cae2fd24
+	fromColumn: competitor_effects.store_id
+	toColumn: dim_store.store_id

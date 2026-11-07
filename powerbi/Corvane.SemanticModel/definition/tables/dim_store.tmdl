@@ -1,0 +1,134 @@
+table dim_store
+	lineageTag: a3ffca2d-ab8a-5792-af23-699445a95f86
+
+	column store_id
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 040590b1-aebb-58ac-8899-e3a7b2742545
+		summarizeBy: none
+		sourceColumn: store_id
+
+		annotation SummarizationSetBy = User
+
+	column store_name
+		dataType: string
+		lineageTag: 6ff8431e-4d98-5425-bf70-6c02732e7c3a
+		summarizeBy: none
+		sourceColumn: store_name
+
+		annotation SummarizationSetBy = User
+
+	column format
+		dataType: string
+		lineageTag: 3cf833ea-2bab-5e31-b23d-712a42ff6b11
+		summarizeBy: none
+		sourceColumn: format
+
+		annotation SummarizationSetBy = User
+
+	column region
+		dataType: string
+		lineageTag: 926e8b58-62ae-55d7-b4ee-f12a464b5831
+		summarizeBy: none
+		sourceColumn: region
+
+		annotation SummarizationSetBy = User
+
+	column assortment
+		dataType: string
+		lineageTag: f952306c-eb97-589f-a3e6-b9b53ac2f4bd
+		summarizeBy: none
+		sourceColumn: assortment
+
+		annotation SummarizationSetBy = User
+
+	column sq_ft
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: ca9b264c-8268-5f10-80ea-fa6ae12295e7
+		summarizeBy: none
+		sourceColumn: sq_ft
+
+		annotation SummarizationSetBy = User
+
+	column competition_distance_m
+		dataType: double
+		isHidden
+		lineageTag: edbdf900-f849-5a9a-b7d8-c20f4266fcca
+		summarizeBy: none
+		sourceColumn: competition_distance_m
+
+		annotation SummarizationSetBy = User
+
+	column opened_year
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 31ac9c43-7e32-5c89-8bd0-e9ba3c1e35c6
+		summarizeBy: none
+		sourceColumn: opened_year
+
+		annotation SummarizationSetBy = User
+
+	column promo2
+		dataType: int64
+		isHidden
+		formatString: 0
+		lineageTag: 0b51a0d8-d281-5db9-8ac5-04f16be43264
+		summarizeBy: none
+		sourceColumn: promo2
+
+		annotation SummarizationSetBy = User
+
+	column competitor_opened
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		lineageTag: 6dfcc51f-d038-5da4-9e68-a7001168fd3c
+		summarizeBy: none
+		sourceColumn: competitor_opened
+
+		annotation SummarizationSetBy = User
+
+	column new_competitor_distance_m
+		dataType: double
+		isHidden
+		lineageTag: d37ae911-8f6a-599c-8353-93eb5d7c87f7
+		summarizeBy: none
+		sourceColumn: new_competitor_distance_m
+
+		annotation SummarizationSetBy = User
+
+	column loyalty_programme
+		dataType: string
+		lineageTag: 5abe7d31-af82-51a6-9fdf-f6af10c556b7
+		summarizeBy: none
+		sourceColumn: loyalty_programme
+
+		annotation SummarizationSetBy = User
+
+	column new_competitor
+		dataType: string
+		lineageTag: 2a862ae0-9c77-5430-9630-0b614ca989c8
+		summarizeBy: none
+		sourceColumn: new_competitor
+
+		annotation SummarizationSetBy = User
+
+	partition dim_store = m
+		mode: import
+		source =
+				let
+				    Source = Csv.Document(File.Contents(DataFolder & "stores.csv"), [Delimiter = ",", Encoding = 65001, QuoteStyle = QuoteStyle.Csv]),
+				    Promoted = Table.PromoteHeaders(Source, [PromoteAllScalars = true]),
+				    Kept = Table.SelectColumns(Promoted, {"store_id", "store_name", "format", "region", "assortment", "sq_ft", "competition_distance_m", "opened_year", "promo2", "competitor_opened", "new_competitor_distance_m"}),
+				    Blanks = Table.TransformColumns(Kept, {}, each if _ = "" then null else _),
+				    Typed = Table.TransformColumnTypes(Blanks, {{"store_id", Int64.Type}, {"store_name", type text}, {"format", type text}, {"region", type text}, {"assortment", type text}, {"sq_ft", Int64.Type}, {"competition_distance_m", type number}, {"opened_year", Int64.Type}, {"promo2", Int64.Type}, {"competitor_opened", type date}, {"new_competitor_distance_m", type number}}, "en-US"),
+				    Loyalty = Table.AddColumn(Typed, "loyalty_programme", each if [promo2] = 1 then "Yes" else "No", type text),
+				    Comp = Table.AddColumn(Loyalty, "new_competitor", each if [competitor_opened] = null then "No" else "Yes", type text)
+				in
+				    Comp
+
+	annotation PBI_ResultType = Table
