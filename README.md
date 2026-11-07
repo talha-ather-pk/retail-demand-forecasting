@@ -4,7 +4,7 @@
 
 Corvane Drugstores (fictional) runs 60 stores in three formats across four US regions. Planning needs a **daily sales forecast for every store for the next six weeks** (1 Jan – 11 Feb 2026) to set staffing, stock and promotion budgets, and wants to know **what actually drives sales**: promotions, holidays, paydays, school breaks or new competitors.
 
-**Live summary page:** _see below once deployed_
+**Live summary page:** https://retail-demand-forecasting-navy.vercel.app (source in [`site/index.html`](site/index.html))
 
 ![Power BI: Forecast Overview](images/dashboard_overview.png)
 
