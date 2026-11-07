@@ -43,11 +43,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Backtest Actual"
+                  "Property": "Holiday Window Actual"
                 }
               },
-              "queryRef": "_Measures.Backtest Actual",
-              "nativeQueryRef": "Backtest Actual",
+              "queryRef": "_Measures.Holiday Window Actual",
+              "nativeQueryRef": "Holiday Window Actual",
               "displayName": "Actual"
             },
             {
@@ -58,11 +58,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Forecast Selected Model (Backtest)"
+                  "Property": "Holiday Window Ensemble"
                 }
               },
-              "queryRef": "_Measures.Forecast Selected Model (Backtest)",
-              "nativeQueryRef": "Forecast Selected Model (Backtest)",
+              "queryRef": "_Measures.Holiday Window Ensemble",
+              "nativeQueryRef": "Holiday Window Ensemble",
               "displayName": "Ensemble"
             },
             {
@@ -73,11 +73,11 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Forecast Baseline (Backtest)"
+                  "Property": "Holiday Window Baseline"
                 }
               },
-              "queryRef": "_Measures.Forecast Baseline (Backtest)",
-              "nativeQueryRef": "Forecast Baseline (Backtest)",
+              "queryRef": "_Measures.Holiday Window Baseline",
+              "nativeQueryRef": "Holiday Window Baseline",
               "displayName": "Baseline"
             }
           ]
@@ -101,7 +101,7 @@
             }
           },
           "selector": {
-            "metadata": "_Measures.Backtest Actual"
+            "metadata": "_Measures.Holiday Window Actual"
           }
         },
         {
@@ -119,7 +119,7 @@
             }
           },
           "selector": {
-            "metadata": "_Measures.Forecast Selected Model (Backtest)"
+            "metadata": "_Measures.Holiday Window Ensemble"
           }
         },
         {
@@ -137,7 +137,7 @@
             }
           },
           "selector": {
-            "metadata": "_Measures.Forecast Baseline (Backtest)"
+            "metadata": "_Measures.Holiday Window Baseline"
           }
         }
       ],
@@ -171,7 +171,7 @@
             }
           },
           "selector": {
-            "metadata": "_Measures.Forecast Baseline (Backtest)"
+            "metadata": "_Measures.Holiday Window Baseline"
           }
         }
       ],
@@ -208,7 +208,7 @@
                       "Entity": "_Measures"
                     }
                   },
-                  "Property": "Title Accuracy Trend"
+                  "Property": "Title Holiday Backtest"
                 }
               }
             }
@@ -228,7 +228,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Each window was forecast before its data was seen'"
+                  "Value": "'Thanksgiving and Christmas closures included; forecast made on 19 Nov'"
                 }
               }
             }

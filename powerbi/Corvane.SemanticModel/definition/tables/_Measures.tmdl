@@ -182,6 +182,35 @@ table _Measures
 		displayFolder: 3 Accuracy
 		lineageTag: ca6238b4-e2f5-566e-901e-dac1306644b4
 
+	measure 'Holiday Window Actual' = CALCULATE ( [Backtest Actual], fact_backtest[fold] = 3 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: 12dbac59-087c-51a0-b6af-1c90f5fc3ac4
+
+	measure 'Holiday Window Ensemble' = CALCULATE ( [Forecast Selected Model (Backtest)], fact_backtest[fold] = 3 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: 58dd9c5e-4199-58b9-a919-aaaa8e12a6e5
+
+	measure 'Holiday Window Baseline' = CALCULATE ( [Forecast Baseline (Backtest)], fact_backtest[fold] = 3 )
+		formatString: \$#,0;(\$#,0);\$#,0
+		displayFolder: 3 Accuracy
+		lineageTag: 7441f6d8-9e9a-535d-a010-23e8b85a0a8e
+
+	measure 'Holiday Window WAPE' = VAR mdl = [Selected Model] RETURN CALCULATE ( [WAPE], fact_backtest[fold] = 3, fact_backtest[model] = mdl )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: 2ed54a41-ada3-5697-b1a3-8675fe055c15
+
+	measure 'Holiday Window Baseline WAPE' = CALCULATE ( [WAPE], fact_backtest[fold] = 3, fact_backtest[model] = "naive" )
+		formatString: 0.0%;-0.0%;0.0%
+		displayFolder: 3 Accuracy
+		lineageTag: b85d967d-cfc3-5f60-afc7-4ffcd234233f
+
+	measure 'Title Holiday Backtest' = "Holiday backtest, 20 Nov – 31 Dec 2025:  ensemble " & FORMAT ( [Holiday Window WAPE], "0.0%" ) & " error vs baseline " & FORMAT ( [Holiday Window Baseline WAPE], "0.0%" )
+		displayFolder: 7 Dynamic text
+		lineageTag: 5504f424-adbe-5056-8b77-bd4d2fbcfa10
+
 	measure 'Error Reduction Label' = FORMAT ( [Error Reduction vs Baseline], "0%" ) & " lower error than baseline"
 		displayFolder: 3 Accuracy
 		lineageTag: ab47b76e-999c-58a7-8578-2fb6c3ef8ecc

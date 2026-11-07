@@ -121,7 +121,8 @@ TABLES = {
     "dim_date": (None, cols(("date", DT, False, {"isKey": None})), [], cols(
         ("year", I), ("month_num", I, True), ("month", S, False, {"sortByColumn": "month_num"}),
         ("month_start", DT, False, {"formatString": "mmm yyyy"}), ("week_start", DT, False, {"formatString": "dd mmm yyyy"}),
-        ("weekday_num", I, True), ("weekday", S, False, {"sortByColumn": "weekday_num"}))),
+        ("weekday_num", I, True), ("weekday", S, False, {"sortByColumn": "weekday_num"}),
+        ("forecast_week_num", I, True), ("forecast_week", S, False, {"sortByColumn": "forecast_week_num"}))),
     "driver_effects": ("driver_effects.csv", cols(
         ("group", S), ("effect", S), ("estimated", D, True), ("ci_low", D, True), ("ci_high", D, True),
         ("true", D, True)), [], []),
@@ -141,9 +142,14 @@ DIM_DATE_M = [
     '    MonthStart = Table.AddColumn(Month, "month_start", each Date.StartOfMonth([date]), type date),',
     '    WeekStart = Table.AddColumn(MonthStart, "week_start", each Date.StartOfWeek([date], Day.Monday), type date),',
     '    WeekdayNum = Table.AddColumn(WeekStart, "weekday_num", each Date.DayOfWeek([date], Day.Monday) + 1, Int64.Type),',
-    '    Weekday = Table.AddColumn(WeekdayNum, "weekday", each Date.ToText([date], "ddd", "en-US"), type text)',
+    '    Weekday = Table.AddColumn(WeekdayNum, "weekday", each Date.ToText([date], "ddd", "en-US"), type text),',
+    '    FcWeekNum = Table.AddColumn(Weekday, "forecast_week_num", each if [date] >= #date(2026, 1, 1) then '
+    'Number.IntegerDivide(Duration.Days([date] - #date(2026, 1, 1)), 7) + 1 else null, Int64.Type),',
+    '    FcWeek = Table.AddColumn(FcWeekNum, "forecast_week", each if [forecast_week_num] = null then null else '
+    '"Week " & Text.From([forecast_week_num]) & "  ·  " & Date.ToText(Date.AddDays(#date(2026, 1, 1), 7 * '
+    '([forecast_week_num] - 1)), "d MMM", "en-US"), type text)',
     "in",
-    "    Weekday",
+    "    FcWeek",
 ]
 
 RELATIONSHIPS = [
@@ -227,6 +233,12 @@ m("MAPE Selected Model", "VAR mdl = [Selected Model] RETURN CALCULATE ( [MAPE], 
 m("Forecast Selected Model (Backtest)",
   "VAR mdl = [Selected Model] RETURN CALCULATE ( [Backtest Forecast], fact_backtest[model] = mdl )", CUR, "3 Accuracy")
 m("Forecast Baseline (Backtest)", 'CALCULATE ( [Backtest Forecast], fact_backtest[model] = "naive" )', CUR, "3 Accuracy")
+m("Holiday Window Actual", "CALCULATE ( [Backtest Actual], fact_backtest[fold] = 3 )", CUR, "3 Accuracy")
+m("Holiday Window Ensemble", "CALCULATE ( [Forecast Selected Model (Backtest)], fact_backtest[fold] = 3 )", CUR, "3 Accuracy")
+m("Holiday Window Baseline", "CALCULATE ( [Forecast Baseline (Backtest)], fact_backtest[fold] = 3 )", CUR, "3 Accuracy")
+m("Holiday Window WAPE", "VAR mdl = [Selected Model] RETURN CALCULATE ( [WAPE], fact_backtest[fold] = 3, fact_backtest[model] = mdl )", PCT, "3 Accuracy")
+m("Holiday Window Baseline WAPE", 'CALCULATE ( [WAPE], fact_backtest[fold] = 3, fact_backtest[model] = "naive" )', PCT, "3 Accuracy")
+m("Title Holiday Backtest", '"Holiday backtest, 20 Nov – 31 Dec 2025:  ensemble " & FORMAT ( [Holiday Window WAPE], "0.0%" ) & " error vs baseline " & FORMAT ( [Holiday Window Baseline WAPE], "0.0%" )', None, "7 Dynamic text")
 m("Error Reduction Label",
   'FORMAT ( [Error Reduction vs Baseline], "0%" ) & " lower error than baseline"', None, "3 Accuracy")
 m("Baseline Label", '"Same weekday last year"', None, "9 Helpers", hidden=True)
@@ -788,11 +800,11 @@ def page_overview():
     p.add("trend", X0, 192, 676, 262, forecast_trend("Title Forecast Trend",
                                                        "Dashed lines: 8 in 10 outcomes should fall between them"))
     p.add("weeks", X0 + 676 + GAP, 192, X1 - X0 - 676 - GAP, 262, visual(
-        "pivotTable", {"Rows": [(col("dim_date", "week_start"), "Week of")],
+        "pivotTable", {"Rows": [(col("dim_date", "forecast_week"), "Week starting")],
                        "Values": [(mea("Forecast"), "Forecast"), (mea("Sales Same Dates LY"), "2025"),
                                   (mea("Forecast vs LY %"), "vs 2025")]},
-        title="Weekly outlook", subtitle="Promo weeks: 12 Jan, 26 Jan, 9 Feb",
-        sort=[(col("dim_date", "week_start"), "Ascending")],
+        title="Weekly outlook vs the same dates in 2025", subtitle="Promo weeks start 12 Jan, 26 Jan and 9 Feb",
+        sort=[(col("dim_date", "forecast_week"), "Ascending")],
         objects={"values": [cf(ref(mea("Forecast vs LY %")), font="vs LY Color")]}))
     p.add("regions", X0, 466, 440, 238, visual(
         "clusteredBarChart", {"Category": [(col("dim_store", "region"), "Region")],
@@ -838,15 +850,15 @@ def page_accuracy():
         objects={"values": [cf(ref(mea("WAPE")), back="WAPE Heat")]}))
     p.add("line", X0, 466, 620, 238, visual(
         "lineChart", {"Category": [(col("dim_date", "date"), "Date")],
-                      "Y": [(mea("Backtest Actual"), "Actual"),
-                            (mea("Forecast Selected Model (Backtest)"), "Ensemble"),
-                            (mea("Forecast Baseline (Backtest)"), "Baseline")]},
-        title=mea("Title Accuracy Trend"), subtitle="Each window was forecast before its data was seen",
-        objects={"dataPoint": series_colors([("Backtest Actual", NAVY), ("Forecast Selected Model (Backtest)", GOLD),
-                                             ("Forecast Baseline (Backtest)", COMPARE)]),
+                      "Y": [(mea("Holiday Window Actual"), "Actual"),
+                            (mea("Holiday Window Ensemble"), "Ensemble"),
+                            (mea("Holiday Window Baseline"), "Baseline")]},
+        title=mea("Title Holiday Backtest"), subtitle="Thanksgiving and Christmas closures included; forecast made on 19 Nov",
+        objects={"dataPoint": series_colors([("Holiday Window Actual", NAVY), ("Holiday Window Ensemble", GOLD),
+                                             ("Holiday Window Baseline", COMPARE)]),
                  "lineStyles": [{"properties": {"strokeWidth": lit(2)}},
                                 {"properties": {"lineStyle": lit("dashed"), "strokeWidth": lit(1.5)},
-                                 "selector": {"metadata": ref(mea("Forecast Baseline (Backtest)"))}}],
+                                 "selector": {"metadata": ref(mea("Holiday Window Baseline"))}}],
                  "categoryAxis": [{"properties": {"axisType": lit("Scalar")}}]}))
     p.add("storeheat", X0 + 620 + GAP, 466, X1 - X0 - 620 - GAP, 238, visual(
         "pivotTable", {"Rows": [STORE], "Columns": [MODEL], "Values": [(mea("WAPE"), "WAPE")]},
@@ -928,15 +940,15 @@ def page_store():
         title="Store profile", subtitle="Attributes that shape the forecast"))
     p.add("bt", X0, 466, X1 - X0, 238, visual(
         "lineChart", {"Category": [(col("dim_date", "date"), "Date")],
-                      "Y": [(mea("Backtest Actual"), "Actual"),
-                            (mea("Forecast Selected Model (Backtest)"), "Ensemble"),
-                            (mea("Forecast Baseline (Backtest)"), "Baseline")]},
-        title="How well this store was forecast in the three backtests", subtitle="Actual vs ensemble vs baseline",
-        objects={"dataPoint": series_colors([("Backtest Actual", NAVY), ("Forecast Selected Model (Backtest)", GOLD),
-                                             ("Forecast Baseline (Backtest)", COMPARE)]),
+                      "Y": [(mea("Holiday Window Actual"), "Actual"),
+                            (mea("Holiday Window Ensemble"), "Ensemble"),
+                            (mea("Holiday Window Baseline"), "Baseline")]},
+        title="How well this store was forecast over the holidays (backtest)", subtitle="Actual vs ensemble vs baseline, 20 Nov – 31 Dec 2025",
+        objects={"dataPoint": series_colors([("Holiday Window Actual", NAVY), ("Holiday Window Ensemble", GOLD),
+                                             ("Holiday Window Baseline", COMPARE)]),
                  "lineStyles": [{"properties": {"strokeWidth": lit(2)}},
                                 {"properties": {"lineStyle": lit("dashed"), "strokeWidth": lit(1.5)},
-                                 "selector": {"metadata": ref(mea("Forecast Baseline (Backtest)"))}}],
+                                 "selector": {"metadata": ref(mea("Holiday Window Baseline"))}}],
                  "categoryAxis": [{"properties": {"axisType": lit("Scalar")}}]}))
     return p
 
@@ -1007,8 +1019,15 @@ def build_report():
                 "pageBinding": {"name": hid("binding", "store"), "type": "Drillthrough",
                                 "parameters": [{"name": pname, "boundFilter": fname,
                                                 "fieldExpr": DRILL_FIELD}]},
-                "filterConfig": {"filters": [{"name": fname, "field": DRILL_FIELD,
-                                              "type": "Categorical"}]}})
+                "filterConfig": {"filters": [{"name": fname, "field": DRILL_FIELD, "type": "Categorical",
+                                              # default store when the page is opened directly;
+                                              # a drill-through replaces it
+                                              "filter": {"Version": 2,
+                                                         "From": [{"Name": "s", "Entity": "dim_store", "Type": 0}],
+                                                         "Where": [{"Condition": {"In": {
+                                                             "Expressions": [{"Column": {"Expression": {"SourceRef": {"Source": "s"}},
+                                                                                         "Property": "store_name"}}],
+                                                             "Values": [[{"Literal": {"Value": "'Atlanta #35'"}}]]}}}]}}]}})
         elif p.kind == "Tooltip":
             page.update({"type": "Tooltip", "visibility": "HiddenInViewMode",
                          "pageBinding": {"name": hid("binding", "tooltip"), "type": "Tooltip",

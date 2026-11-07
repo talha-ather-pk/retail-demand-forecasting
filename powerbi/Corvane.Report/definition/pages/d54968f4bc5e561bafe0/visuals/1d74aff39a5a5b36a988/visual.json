@@ -24,12 +24,12 @@
                       "Entity": "dim_date"
                     }
                   },
-                  "Property": "week_start"
+                  "Property": "forecast_week"
                 }
               },
-              "queryRef": "dim_date.week_start",
-              "nativeQueryRef": "week_start",
-              "displayName": "Week of"
+              "queryRef": "dim_date.forecast_week",
+              "nativeQueryRef": "forecast_week",
+              "displayName": "Week starting"
             }
           ]
         },
@@ -93,7 +93,7 @@
                     "Entity": "dim_date"
                   }
                 },
-                "Property": "week_start"
+                "Property": "forecast_week"
               }
             },
             "direction": "Ascending"
@@ -150,7 +150,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Weekly outlook'"
+                  "Value": "'Weekly outlook vs the same dates in 2025'"
                 }
               }
             }
@@ -170,7 +170,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Promo weeks: 12 Jan, 26 Jan, 9 Feb'"
+                  "Value": "'Promo weeks start 12 Jan, 26 Jan and 9 Feb'"
                 }
               }
             }
